@@ -37,7 +37,7 @@ func ReadImage(r io.Reader) (*models.BitmapHeader, [][]models.Pixel, error) {
 	colorsImportant := binary.LittleEndian.Uint32(header[50:54])
 
 	pixels := make([][]models.Pixel, height)
-	for i := height - 1; i >= 0; i-- {
+	for i := int(height - 1); i >= 0; i-- {
 		row := make([]models.Pixel, 0)
 		for j := 0; j < int(width); j++ {
 			bytes := make([]byte, 3)
