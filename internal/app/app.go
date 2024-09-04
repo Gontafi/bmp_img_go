@@ -65,12 +65,14 @@ func ParseArgsAndRunCommands(args []string) error {
 
 		defer file.Close()
 
-		header, _, err := read.ReadImage(file)
+		_, _, err = read.ReadImage(file)
 		if err != nil {
 			return err
 		}
 
 	}
+
+	return nil
 }
 
 /*
