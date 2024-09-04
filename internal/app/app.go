@@ -1,12 +1,13 @@
 package app
 
 import (
-	"bitmap/internal/apply/rotate"
-	"bitmap/internal/read"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"bitmap/internal/apply/rotate"
+	"bitmap/internal/read"
 )
 
 func ParseArgsAndRunCommands(args []string) error {

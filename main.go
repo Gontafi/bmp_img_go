@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("sample.bmp")
+	file, err := os.Open("new.bmp")
 	if err != nil {
 		log.Fatal(err)
 	}
