@@ -32,9 +32,3 @@ type Pixel struct {
 	Green byte
 	Red   byte
 }
-
-type ImageBody struct {
-	Width  int
-	Height int
-	Pixels [][]Pixel
-}
