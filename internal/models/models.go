@@ -28,9 +28,9 @@ type CropParams struct {
 }
 
 type Pixel struct {
-	Blue  string
-	Green string
-	Red   string
+	Blue  byte
+	Green byte
+	Red   byte
 }
 
 type ImageBody struct {
