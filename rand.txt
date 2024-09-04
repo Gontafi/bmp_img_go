@@ -1,0 +1,5 @@
+Temu 1 Crop
+Beka 2 Mirror
+Beka 5 Rotate
+Alibek 3 read, save, flag and etc.. 
+Era 4 Filter
