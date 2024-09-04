@@ -1,12 +1,12 @@
 package main
 
 import (
-	"bitmap/internal/apply/rotate"
-	"bitmap/internal/read"
-	"bitmap/internal/save"
-	"fmt"
 	"log"
 	"os"
+
+	"bitmap/internal/apply/filter"
+	"bitmap/internal/read"
+	"bitmap/internal/save"
 )
 
 func main() {
@@ -17,15 +17,12 @@ func main() {
 
 	defer file.Close()
 
-	header, pixels, err := read.ReadImage(file)
+	_, pixels, err := read.ReadImage(file)
 	if err != nil {
 		log.Fatal(err)
 	}
-	rotated, err := rotate.Rotate(pixels, "90")
-	if err == nil {
-		fmt.Println(rotated)
-	}
-	_ = header
+
+	filter.Filter(pixels)
 
 	err = save.SaveImage(rotated, "test.bmp")
 	if err != nil {
