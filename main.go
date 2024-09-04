@@ -1,10 +1,12 @@
 package main
 
 import (
-	"bitmap/internal/read"
-	"bitmap/internal/save"
 	"log"
 	"os"
+
+	"bitmap/internal/apply/filter"
+	"bitmap/internal/read"
+	"bitmap/internal/save"
 )
 
 func main() {
@@ -15,12 +17,12 @@ func main() {
 
 	defer file.Close()
 
-	header, pixels, err := read.ReadImage(file)
+	_, pixels, err := read.ReadImage(file)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_ = header
+	filter.Filter(pixels)
 
 	err = save.SaveImage(pixels, "test.bmp")
 	if err != nil {
