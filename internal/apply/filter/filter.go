@@ -1,6 +1,9 @@
 package filter
 
-import "bitmap/internal/models"
+import (
+	"bitmap/internal/models"
+	"bitmap/pkg"
+)
 
 func Filter(pix [][]models.Pixel) error {
 	blur(pix)
@@ -90,29 +93,34 @@ func pixelate(pix [][]models.Pixel) {
 }
 
 func blur(pix [][]models.Pixel) {
-	for i := 2; i < len(pix); i += 3 {
-		for j := 2; j < len(pix[i]); j += 3 {
+	neigbors := pkg.GenerateNeighbours(10)
+
+	for i := 0; i < len(pix); i++ {
+		for j := 0; j < len(pix[i]); j++ {
+
 			averageB := 0
 			averageG := 0
 			averageR := 0
-			for k := i - 2; k <= i; k++ {
-				for m := j - 2; m <= j; m++ {
-					averageB += int(pix[k][m].Blue)
-					averageG += int(pix[k][m].Green)
-					averageR += int(pix[k][m].Red)
-				}
-			}
-			averageB /= 9
-			averageG /= 9
-			averageR /= 9
-			for k := i - 2; k <= i; k++ {
-				for m := j - 2; m <= j; m++ {
-					pix[k][m].Blue = byte(averageB)
-					pix[k][m].Green = byte(averageG)
-					pix[k][m].Red = byte(averageR)
+
+			counter := 0
+			for _, k := range neigbors {
+				newX := i + k[0]
+				newY := j + k[1]
+				if newX >= 0 && newX < len(pix) && newY >= 0 && newY < len(pix[i]) {
+					averageB += int(pix[newX][newY].Blue)
+					averageG += int(pix[newX][newY].Green)
+					averageR += int(pix[newX][newY].Red)
+					counter++
 				}
 			}
 
+			averageB /= counter
+			averageG /= counter
+			averageR /= counter
+
+			pix[i][j].Blue = byte(averageB)
+			pix[i][j].Red = byte(averageR)
+			pix[i][j].Green = byte(averageG)
 		}
 	}
 	return
