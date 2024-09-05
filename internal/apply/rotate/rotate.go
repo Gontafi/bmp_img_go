@@ -1,28 +1,6 @@
 package rotate
 
-import (
-	m "bitmap/internal/models"
-	"fmt"
-)
-
-func Rotate(image [][]m.Pixel, direction string) ([][]m.Pixel, error) {
-	if len(image) == 0 {
-		return nil, fmt.Errorf("Image lenght error")
-	}
-	switch direction {
-	case "right", "90", "-270":
-		return RotateRight(image), nil
-	case "180", "-180":
-		return BottomUp(image), nil
-	case "270", "left", "-90":
-		return RotateLeft(image), nil
-	case "0", "360", "-360":
-		return image, nil
-	default:
-		break
-	}
-	return nil, fmt.Errorf("Error direction")
-}
+import m "bitmap/internal/models"
 
 func RotateRight(image [][]m.Pixel) [][]m.Pixel {
 	var rotatedImage [][]m.Pixel
