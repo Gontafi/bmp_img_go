@@ -4,6 +4,7 @@ import (
 	"bitmap/internal/apply/rotate"
 	"bitmap/internal/read"
 	"bitmap/internal/save"
+	"fmt"
 	"log"
 	"os"
 )
@@ -21,7 +22,9 @@ func main() {
 		log.Fatal(err)
 	}
 	rotated, err := rotate.Rotate(pixels, "90")
-
+	if err == nil {
+		fmt.Println(rotated)
+	}
 	_ = header
 
 	err = save.SaveImage(rotated, "test.bmp")

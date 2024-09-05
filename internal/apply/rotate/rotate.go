@@ -6,91 +6,57 @@ import (
 )
 
 func Rotate(image [][]m.Pixel, direction string) ([][]m.Pixel, error) {
-	rotated := [][]m.Pixel{}
-	var turn int
+	if len(image) == 0 {
+		return nil, fmt.Errorf("Image lenght error")
+	}
+	empty := [][]m.Pixel{}
 	switch direction {
 	case "right", "90", "-270":
-		if len(image) != 0 {
-			rotated = make([][]m.Pixel, len(image[0]))
-			for i := 0; i < len(image); i++ {
-				rotated[i] = make([]m.Pixel, len(image))
-			}
-			turn = 1
-		}
+		return RotateRight(empty, image), nil
 	case "180", "-180":
-		turn = 2
+		return BottomUp(empty, image), nil
 	case "270", "left", "-90":
-		if len(image) != 0 {
-			rotated = make([][]m.Pixel, len(image[0]))
-			for i := 0; i < len(image); i++ {
-				rotated[i] = make([]m.Pixel, len(image))
-			}
-			turn = 1
-		}
-		turn = 3
+		return RotateLeft(empty, image), nil
+	case "0", "360", "-360":
+		return image, nil
 	default:
-		turn = 0
+		break
 	}
-	if turn == 0 {
-		return nil, fmt.Errorf("Direction error")
-	}
-	for t := 0; t < turn; t++ {
-		for i := 0; i < len(image); i++ {
-			row := []m.Pixel{}
-			for j := 0; j < len(image[i]); j++ {
-				pixel := image[len(image)-1-j][i]
-
-				row = append(row, pixel)
-			}
-			rotated = append(rotated, row)
-		}
-	}
-
-	return rotated, nil
+	return nil, fmt.Errorf("Error direction")
 }
 
-/*func Rotate(image [][]int, direction string) ([][]int, error) {
-	rotated := [][]int{}
-	var turn int
-	switch direction {
-	case "right", "90", "-270":
-		if len(image) != 0 {
-			rotated = make([][]int, len(image[0]))
-			for i := 0; i < len(image[i]); i++ {
-				rotated[i] = make([]int, len(image))
-			}
-			turn = 1
+func RotateRight(empty [][]m.Pixel, image [][]m.Pixel) [][]m.Pixel {
+	for i := 0; i < len(image[0]); i++ {
+		row := []m.Pixel{}
+		for j := 0; j < len(image); j++ {
+			pixel := image[len(image)-1-j][i]
+			row = append(row, pixel)
 		}
-	case "180", "-180":
-		turn = 2
-	case "270", "left", "-90":
-		if len(image) != 0 {
-			rotated = make([][]int, len(image[0]))
-			for i := 0; i < len(image[i]); i++ {
-				rotated[i] = make([]int, len(image))
-			}
-			turn = 1
-		}
-		turn = 3
-	default:
-		turn = 0
+		empty = append(empty, row)
 	}
-	if turn == 0 {
-		return nil, fmt.Errorf("Direction error")
-	}
-
-	for t := 0; t < turn; t++ {
-		for i := 0; i < len(image[0]); i++ {
-			row := []int{}
-			for j := 0; j < len(image); j++ {
-				pixel := image[len(image)-1-j][i]
-				fmt.Println(pixel)
-				row = append(row, pixel)
-			}
-			rotated = append(rotated, row)
-		}
-	}
-
-	return rotated, nil
+	return empty
 }
-*/
+
+func RotateLeft(empty [][]m.Pixel, image [][]m.Pixel) [][]m.Pixel {
+	for i := len(image[0]) - 1; i >= 0; i-- {
+		row := []m.Pixel{}
+		for j := 0; j < len(image); j++ {
+			pixel := image[j][i]
+			row = append(row, pixel)
+		}
+		empty = append(empty, row)
+	}
+	return empty
+}
+
+func BottomUp(empty [][]m.Pixel, image [][]m.Pixel) [][]m.Pixel {
+	for i := len(image) - 1; i >= 0; i-- {
+		row := []m.Pixel{}
+		for j := len(image[0]) - 1; j >= 0; j-- {
+			pixel := image[i][j]
+			row = append(row, pixel)
+		}
+		empty = append(empty, row)
+	}
+	return empty
+}
