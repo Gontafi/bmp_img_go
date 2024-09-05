@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"bitmap/internal/apply/crop"
+	"bitmap/internal/apply/filter"
 	mirror "bitmap/internal/apply/miror"
 	"bitmap/internal/apply/rotate"
 	"bitmap/internal/models"
@@ -17,67 +18,70 @@ import (
 )
 
 var (
-	InvalidArg        = errors.New("invalid args")
-	NotEnoughArgs     = errors.New("not enough args")
-	MissmatchFileType = errors.New("file is not .bmp or .dib type")
-	MissDirection     = errors.New("miss direction")
+	InvalidArg        = errors.New("Invalid args:")
+	NotEnoughArgs     = errors.New("Not enough args")
+	MissmatchFileType = errors.New("File is not .bmp or .dib type:")
+	MissDirection     = errors.New("Miss direction:")
 )
 
 func ParseArgsAndRunCommands(args []string) error {
 	if len(args) < 2 {
-		return NotEnoughArgs
+		return pkg.Check(NotEnoughArgs, "")
 	}
 	switch args[1] {
 	case "apply":
 
 		if len(args)-2 <= 2 {
-			return NotEnoughArgs
+			return pkg.Check(NotEnoughArgs, "")
 		}
 		imgPath := strings.TrimSpace(args[len(args)-2])
 		imgExt := filepath.Ext(imgPath)
 
 		if imgExt != ".bmp" && imgExt != ".dib" {
-			return MissmatchFileType
+			return pkg.Check(MissmatchFileType, imgPath)
 		}
 
 		file, err := os.Open(imgPath)
 		if err != nil {
-			return err
+			return pkg.Check(err, imgPath)
 		}
 
 		defer file.Close()
 
 		_, pixels, err := read.ReadImage(file)
 		if err != nil {
-			return err
+			return pkg.Check(err, imgPath)
 		}
 
 		for _, arg := range args[2 : len(args)-2] {
 			parts := strings.Split(arg, "=")
 			if len(parts) != 2 {
-				return InvalidArg
+				return pkg.Check(InvalidArg, parts[1])
 			}
 
 			switch parts[0] {
 			case "--filter":
-				// to-do
+				err = filter.ParseFilterDir(pixels, parts[1])
+				if err != nil {
+					return pkg.Check(err, parts[1])
+				}
 			case "--rotate":
 				pixels, err = ParseRotateDir(pixels, parts[1])
 				if err != nil {
-					return err
+					return pkg.Check(err, parts[1])
 				}
 			case "--mirror":
 				pixels, err = ParseMirrorDir(pixels, parts[1])
 				if err != nil {
-					return err
+					return pkg.Check(err, parts[1])
 				}
 			case "--crop":
 				pixels, err = ParseCrop(pixels, parts[1])
 				if err != nil {
-					return err
+					return pkg.Check(err, parts[1])
 				}
 			default:
-				return InvalidArg
+				return pkg.Check(InvalidArg, parts[1])
 			}
 		}
 		err = save.SaveImage(pixels, strings.TrimSpace(args[len(args)-1]))
@@ -90,22 +94,26 @@ func ParseArgsAndRunCommands(args []string) error {
 		}
 		file, err := os.Open(args[2])
 		if err != nil {
-			return err
+			return pkg.Check(err, args[2])
 		}
 
 		defer file.Close()
 
 		header, _, err := read.ReadImage(file)
 		if err != nil {
-			return err
+			return pkg.Check(err, args[2])
 		}
 		pkg.PrintHeaderInfo(*header)
 
 	default:
-		return InvalidArg
+		return pkg.Check(InvalidArg, args[1])
 	}
 
 	return nil
+}
+
+func ParseFilterDir(pixels [][]models.Pixel, s string) {
+	panic("unimplemented")
 }
 
 func ParseCrop(image [][]models.Pixel, arg string) ([][]models.Pixel, error) {
@@ -114,33 +122,33 @@ func ParseCrop(image [][]models.Pixel, arg string) ([][]models.Pixel, error) {
 	case 4:
 		offsetX, err := strconv.Atoi(sizes[0])
 		if err != nil {
-			return nil, err
+			return nil, pkg.Check(err, arg)
 		}
 		offsetY, err := strconv.Atoi(sizes[1])
 		if err != nil {
-			return nil, err
+			return nil, pkg.Check(err, arg)
 		}
 		width, err := strconv.Atoi(sizes[2])
 		if err != nil {
-			return nil, err
+			return nil, pkg.Check(err, arg)
 		}
 		height, err := strconv.Atoi(sizes[3])
 		if err != nil {
-			return nil, err
+			return nil, pkg.Check(err, arg)
 		}
 		return crop.Crop(image, offsetX, offsetY, width, height)
 	case 2:
 		offsetX, err := strconv.Atoi(sizes[0])
 		if err != nil {
-			return nil, err
+			return nil, pkg.Check(err, arg)
 		}
 		offsetY, err := strconv.Atoi(sizes[1])
 		if err != nil {
-			return nil, err
+			return nil, pkg.Check(err, arg)
 		}
 		return crop.Crop(image, offsetX, offsetY, 0, 0)
 	default:
-		return nil, InvalidArg
+		return nil, pkg.Check(InvalidArg, arg)
 	}
 }
 
@@ -155,18 +163,17 @@ func ParseRotateDir(image [][]models.Pixel, direction string) ([][]models.Pixel,
 	case "0", "360", "-360":
 		return image, nil
 	default:
-		break
+		return nil, pkg.Check(MissDirection, direction)
 	}
-	return nil, MissDirection
 }
 
-func ParseMirrorDir(image [][]models.Pixel, dir string) ([][]models.Pixel, error) {
-	switch dir {
+func ParseMirrorDir(image [][]models.Pixel, direction string) ([][]models.Pixel, error) {
+	switch direction {
 	case "horizontal", "h", "hor", "horizontally":
 		return mirror.FlipHorizontal(image), nil
 	case "vertical", "v", "vertically", "ver":
 		return mirror.FlipVertical(image), nil
 	default:
-		return nil, MissDirection
+		return nil, pkg.Check(MissDirection, direction)
 	}
 }

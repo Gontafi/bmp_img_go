@@ -1,12 +1,33 @@
 package filter
 
 import (
+	"errors"
+
 	"bitmap/internal/models"
 	"bitmap/pkg"
 )
 
-func Filter(pix [][]models.Pixel) error {
-	blur(pix)
+var ErrInvalidArgument error = errors.New("Invalid argument passed to flag:")
+
+func ParseFilterDir(pix [][]models.Pixel, argument string) error {
+	switch argument {
+	case "blue":
+		blue(pix)
+	case "red":
+		red(pix)
+	case "green":
+		green(pix)
+	case "grayscale":
+		grayscale(pix)
+	case "negative":
+		negative(pix)
+	case "pixelate":
+		pixelate(pix)
+	case "blur":
+		blur(pix)
+	default:
+		return ErrInvalidArgument
+	}
 	return nil
 }
 

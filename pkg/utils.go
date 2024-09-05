@@ -1,8 +1,10 @@
 package pkg
 
 import (
-	"bitmap/internal/models"
 	"fmt"
+	"os"
+
+	"bitmap/internal/models"
 )
 
 func PrintHeaderInfo(header models.BitmapHeader) {
@@ -12,8 +14,8 @@ func PrintHeaderInfo(header models.BitmapHeader) {
 	fmt.Println("- HeaderSize ", header.HeaderSize)
 	fmt.Println("DIB Header:")
 	fmt.Println("- DibHeaderSize ", header.DibHeaderSize)
-	fmt.Println("- Width ", header.Width)
-	fmt.Println("- Height ", header.Height)
+	fmt.Println("- WidthInPixels ", header.Width)
+	fmt.Println("- HeightInPixels ", header.Height)
 	fmt.Println("- PixelSize ", header.PixelSize)
 	fmt.Println("- ImageSize ", header.ImageSize)
 	fmt.Println("- Planes ", header.Planes)
@@ -23,4 +25,9 @@ func PrintHeaderInfo(header models.BitmapHeader) {
 	fmt.Println("- YPixelsPerM ", header.YPixelsPerM)
 	fmt.Println("- ColorsUsed ", header.ColorsUsed)
 	fmt.Println("- ColorsImportant ", header.ColorsImportant)
+}
+
+func Check(err error, text string) error {
+	fmt.Fprintf(os.Stderr, "Error: %v %s\n\r", err.Error(), text)
+	return err
 }
