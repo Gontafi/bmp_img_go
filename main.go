@@ -1,10 +1,11 @@
 package main
 
 import (
-	"bitmap/internal/read"
-	"bitmap/internal/save"
 	"log"
 	"os"
+
+	"bitmap/internal/read"
+	"bitmap/internal/save"
 )
 
 func main() {
