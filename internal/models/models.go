@@ -19,14 +19,6 @@ type BitmapHeader struct {
 	ColorsImportant int
 }
 
-// CropParams represents the cropping parameters for the bitmap image.
-type CropParams struct {
-	OffsetX int // X offset for cropping
-	OffsetY int // Y offset for cropping
-	Width   int // Optional width for cropping
-	Height  int // Optional height for cropping
-}
-
 type Pixel struct {
 	Blue  byte
 	Green byte
