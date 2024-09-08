@@ -25,6 +25,10 @@ var (
 )
 
 func ParseArgsAndRunCommands(args []string) error {
+	if len(args) == 1 { //$ ./bitmap case
+		pkg.PrintUsage()
+		return nil
+	}
 	if len(args) < 2 {
 		return pkg.Check(NotEnoughArgs, "")
 	}
@@ -33,6 +37,10 @@ func ParseArgsAndRunCommands(args []string) error {
 
 		if len(args)-2 <= 2 {
 			return pkg.Check(NotEnoughArgs, "")
+		}
+		if pkg.IsHelp(args[2:]) {
+			pkg.PrintApplyHelp()
+			return nil
 		}
 		imgPath := strings.TrimSpace(args[len(args)-2])
 		imgExt := filepath.Ext(imgPath)
@@ -92,6 +100,10 @@ func ParseArgsAndRunCommands(args []string) error {
 		if len(args) != 3 {
 			return NotEnoughArgs
 		}
+		if args[2] == "--help" || args[2] == "-h" {
+			pkg.PrintHeaderHelp()
+			return nil
+		}
 		file, err := os.Open(args[2])
 		if err != nil {
 			return pkg.Check(err, args[2])
@@ -104,7 +116,12 @@ func ParseArgsAndRunCommands(args []string) error {
 			return pkg.Check(err, args[2])
 		}
 		pkg.PrintHeaderInfo(*header)
-
+	case "--help":
+		pkg.PrintUsage()
+		return nil
+	case "-h":
+		pkg.PrintUsage()
+		return nil
 	default:
 		return pkg.Check(InvalidArg, args[1])
 	}

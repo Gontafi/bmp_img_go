@@ -43,3 +43,12 @@ The options are:
 `
 	fmt.Print(applyHelpText)
 }
+
+func IsHelp(args []string) bool {
+	for _, arg := range args {
+		if arg == "--help" || arg == "-h" {
+			return true
+		}
+	}
+	return false
+}

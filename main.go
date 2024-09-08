@@ -1,16 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"bitmap/internal/app"
-	"bitmap/pkg"
 )
 
 func main() {
 	err := app.ParseArgsAndRunCommands(os.Args)
 	if err != nil {
-		pkg.PrintUsage()
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
