@@ -31,3 +31,28 @@ func Check(err error, text string) error {
 	fmt.Fprintf(os.Stderr, "Error: %v %s\n\r", err.Error(), text)
 	return err
 }
+
+func Help() {
+	helpText := `Usage:
+  bitmap <command> [arguments]
+
+The commands are:
+  header    prints bitmap file header information
+  apply     applies processing to the image and saves it to the file
+
+$ ./bitmap header --help
+Usage:
+  bitmap header <source_file>
+
+Description:
+  Prints bitmap file header information
+
+$ ./bitmap apply --help
+Usage:
+  bitmap apply [options] <source_file> <output_file>
+
+The options are:
+  -h, --help      prints program usage information
+`
+	fmt.Print(helpText)
+}
