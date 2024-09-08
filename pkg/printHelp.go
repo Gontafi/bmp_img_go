@@ -2,7 +2,7 @@ package pkg
 
 import "fmt"
 
-func printUsage() {
+func PrintUsage() {
 	usageText := `Usage:
   bitmap <command> [arguments]
 
@@ -13,7 +13,7 @@ The commands are:
 	fmt.Print(usageText)
 }
 
-func printHeaderHelp() {
+func PrintHeaderHelp() {
 	headerHelpText := `Usage:
   bitmap header <source_file>
 
@@ -23,7 +23,7 @@ Description:
 	fmt.Print(headerHelpText)
 }
 
-func printApplyHelp() {
+func PrintApplyHelp() {
 	applyHelpText := `Usage:
   bitmap apply [options] <source_file> <output_file>
 
