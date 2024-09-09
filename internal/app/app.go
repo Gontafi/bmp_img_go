@@ -140,33 +140,33 @@ func ParseCrop(image [][]models.Pixel, arg string) ([][]models.Pixel, error) {
 	case 4:
 		offsetX, err := strconv.Atoi(sizes[0])
 		if err != nil {
-			return nil, pkg.Check(err, arg)
+			return nil, err
 		}
 		offsetY, err := strconv.Atoi(sizes[1])
 		if err != nil {
-			return nil, pkg.Check(err, arg)
+			return nil, err
 		}
 		width, err := strconv.Atoi(sizes[2])
 		if err != nil {
-			return nil, pkg.Check(err, arg)
+			return nil, err
 		}
 		height, err := strconv.Atoi(sizes[3])
 		if err != nil {
-			return nil, pkg.Check(err, arg)
+			return nil, err
 		}
 		return crop.Crop(image, offsetX, offsetY, width, height)
 	case 2:
 		offsetX, err := strconv.Atoi(sizes[0])
 		if err != nil {
-			return nil, pkg.Check(err, arg)
+			return nil, err
 		}
 		offsetY, err := strconv.Atoi(sizes[1])
 		if err != nil {
-			return nil, pkg.Check(err, arg)
+			return nil, err
 		}
 		return crop.Crop(image, offsetX, offsetY, 0, 0)
 	default:
-		return nil, pkg.Check(ErrInvalidArg, arg)
+		return nil, ErrInvalidArg
 	}
 }
 
@@ -181,7 +181,7 @@ func ParseRotateDir(image [][]models.Pixel, direction string) ([][]models.Pixel,
 	case "0", "360", "-360":
 		return image, nil
 	default:
-		return nil, pkg.Check(ErrMissDirection, direction)
+		return nil, ErrMissDirection
 	}
 }
 
@@ -192,6 +192,6 @@ func ParseMirrorDir(image [][]models.Pixel, direction string) ([][]models.Pixel,
 	case "vertical", "v", "vertically", "ver":
 		return mirror.FlipVertical(image), nil
 	default:
-		return nil, pkg.Check(ErrMissDirection, direction)
+		return nil, ErrMissDirection
 	}
 }

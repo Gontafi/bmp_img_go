@@ -33,10 +33,10 @@ func ParseFilterDir(pix [][]models.Pixel, argument string) error {
 func grayscale(pix [][]models.Pixel) {
 	for i := 0; i < len(pix); i++ {
 		for j := 0; j < len(pix[i]); j++ {
-			average := (pix[i][j].Blue + pix[i][j].Red + pix[i][j].Green) / 3
-			pix[i][j].Blue = average
-			pix[i][j].Green = average
-			pix[i][j].Red = average
+			average := 0.299*float64(pix[i][j].Blue) + 0.587*float64(pix[i][j].Red) + 0.114*float64(pix[i][j].Green)
+			pix[i][j].Blue = uint8(average)
+			pix[i][j].Green = uint8(average)
+			pix[i][j].Red = uint8(average)
 		}
 	}
 	return
