@@ -1,11 +1,10 @@
 package read
 
 import (
+	"bitmap/internal/models"
 	"encoding/binary"
 	"fmt"
 	"io"
-
-	"bitmap/internal/models"
 )
 
 func ReadImage(r io.ReadSeeker) (*models.BitmapHeader, [][]models.Pixel, error) {

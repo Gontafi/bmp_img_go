@@ -1,12 +1,11 @@
 package save
 
 import (
+	"bitmap/internal/models"
 	"bytes"
 	"encoding/binary"
 	"fmt"
 	"os"
-
-	"bitmap/internal/models"
 )
 
 // Calculate the padding needed for each row to be aligned to a 4-byte boundary
