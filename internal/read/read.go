@@ -37,7 +37,7 @@ func ReadImage(r io.ReadSeeker) (*models.BitmapHeader, [][]models.Pixel, error) 
 	colorsUsed := binary.LittleEndian.Uint32(header[46:50])
 	colorsImportant := binary.LittleEndian.Uint32(header[50:54])
 
-	if compression != 0 {
+	if compression != 0 || bitsPerPixel != 24 {
 		return nil, nil, fmt.Errorf("unsupported BMP compression type")
 	}
 
