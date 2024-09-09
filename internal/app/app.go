@@ -64,7 +64,7 @@ func ParseArgsAndRunCommands(args []string) error {
 		for _, arg := range args[2 : len(args)-2] {
 			parts := strings.Split(arg, "=")
 			if len(parts) != 2 {
-				return pkg.Check(InvalidArg, parts[1])
+				return pkg.Check(InvalidArg, "")
 			}
 
 			switch parts[0] {
