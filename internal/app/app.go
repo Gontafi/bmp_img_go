@@ -31,16 +31,6 @@ func ParseArgsAndRunCommands(args []string) error {
 	if len(args) < 2 {
 		return pkg.Check(ErrNotEnoughArgs, "")
 	}
-	for _, arg := range args {
-		switch arg {
-		case "--help":
-			pkg.PrintUsage()
-			return nil
-		case "-h":
-			pkg.PrintUsage()
-			return nil
-		}
-	}
 	switch args[1] {
 	case "apply":
 
@@ -126,6 +116,12 @@ func ParseArgsAndRunCommands(args []string) error {
 			return pkg.Check(err, args[2])
 		}
 		pkg.PrintHeaderInfo(header)
+	case "--help":
+		pkg.PrintUsage()
+		return nil
+	case "-h":
+		pkg.PrintUsage()
+		return nil
 
 	default:
 		return pkg.Check(ErrInvalidArg, args[1])
