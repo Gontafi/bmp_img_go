@@ -78,7 +78,8 @@ func ReadImage(r io.ReadSeeker) (*models.BitmapHeader, [][]models.Pixel, error) 
 	return &models.BitmapHeader{
 		FileType:        fileType,
 		FileSize:        int(fileSize),
-		HeaderSize:      int(headerSize),
+		HeaderSize:      int(dataOffset),
+		DibHeaderSize:   int(headerSize),
 		Width:           int(width),
 		Height:          int(height),
 		Planes:          int(planes),

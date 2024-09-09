@@ -1,10 +1,9 @@
 package filter
 
 import (
-	"errors"
-
 	"bitmap/internal/models"
 	"bitmap/pkg"
+	"errors"
 )
 
 var ErrInvalidArgument error = errors.New("Invalid argument passed to flag:")

@@ -19,8 +19,7 @@ func Crop(pixels [][]m.Pixel, offsetX, offsetY, width, heigth int) ([][]m.Pixel,
 		width = len(pixels[0]) - offsetX
 		heigth = len(pixels) - offsetY
 	}
-	var cropped [][]m.Pixel
-	cropped = pixels[offsetY : offsetY+heigth] // Cut by Y dimension
+	cropped := pixels[offsetY : offsetY+heigth] // Cut by Y dimension
 	for i := 0; i < len(cropped); i++ {
 		cropped[i] = cropped[i][offsetX : offsetX+width] // Cutting by X dimension
 	}
