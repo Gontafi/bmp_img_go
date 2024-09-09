@@ -1,8 +1,9 @@
 package pkg
 
 import (
-	"bitmap/internal/models"
 	"fmt"
+
+	"bitmap/internal/models"
 )
 
 func Compare(pix1 [][]models.Pixel, pix2 [][]models.Pixel) {

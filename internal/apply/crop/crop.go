@@ -10,13 +10,15 @@ var ValuesOutOfBound = errors.New("Given values out of bound")
 
 // Width and Height may or not be set, if they was not set, then -1 value should be passed to function
 func Crop(pixels [][]m.Pixel, offsetX, offsetY, width, heigth int) ([][]m.Pixel, error) {
-	if offsetX < 0 || offsetY < 0 || offsetX >= len(pixels[0]) || offsetY >= len(pixels) || offsetX+width > len(pixels[0]) || offsetY+heigth > len(pixels) || width <= 0 || heigth <= 0 {
+	if offsetX < 0 || offsetY < 0 || offsetX+width > len(pixels[0]) || offsetY+heigth > len(pixels) || width < 0 || heigth < 0 {
 		return nil, ValuesOutOfBound
 	}
 
 	// If width and height was not set cut only by offsets
-	if width == -1 && heigth == -1 {
+	if width == 0 {
 		width = len(pixels[0]) - offsetX
+	}
+	if heigth == 0 {
 		heigth = len(pixels) - offsetY
 	}
 	cropped := pixels[offsetY : offsetY+heigth] // Cut by Y dimension

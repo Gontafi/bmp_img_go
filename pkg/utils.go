@@ -1,9 +1,10 @@
 package pkg
 
 import (
-	"bitmap/internal/models"
 	"fmt"
 	"os"
+
+	"bitmap/internal/models"
 )
 
 func PrintHeaderInfo(header *models.BitmapHeader) {

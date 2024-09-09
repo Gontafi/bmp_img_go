@@ -1,8 +1,9 @@
 package main
 
 import (
-	"bitmap/internal/app"
 	"os"
+
+	"bitmap/internal/app"
 )
 
 func main() {
