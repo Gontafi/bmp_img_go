@@ -1,3 +1,4 @@
 *.bmp
 !sample.bmp
+!assets/*.bmp
 bitmap

@@ -1,203 +1,306 @@
-#### 1. Create a Bucket:
-- **HTTP Method:** `PUT`
-- **Endpoint:** `/{BucketName}`
-- **Request Body:** Empty. Additional parameters can be passed in the request headers.
-- **Behavior:**
-  - Validate the bucket name to ensure it meets Amazon S3 naming requirements (3-63 characters, only lowercase letters, numbers, hyphens, and periods).
-  - Ensure the bucket name is unique across the entire storage system.
-  - If the bucket name is valid and unique, create a new entry in the bucket metadata storage.
-  - Return a `200 OK` status code and details of the created bucket, or an appropriate error message if the creation fails (e.g., `400 Bad Request` for invalid names, `409 Conflict` for duplicate names).
+### Mandatory Part
 
-Rely on the [documentation](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html#API_CreateBucket_Examples)
+#### Header
 
-#### 2. List All Buckets:
-- **HTTP Method:** `GET`
-- **Endpoint:** `/`
-- **Behavior:**
-  - Read the bucket metadata from the storage (e.g., a CSV file).
-  - Return an XML response containing a list of all matching buckets, including metadata like creation time, last modified time, etc.
-  - Respond with a `200 OK` status code and the [XML list of buckets](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBuckets.html#API_ListBuckets_Examples).
+The `Header` feature reads a bitmap image file and outputs its properties.
 
-#### 3. Delete a Bucket:
-- **HTTP Method:** `DELETE`
-- **Endpoint:** `/{BucketName}`
-- **Behavior:**
-  - Check if the specified bucket exists by looking it up in the bucket metadata storage.
-  - Ensure the bucket is empty (no objects are stored in it) before deletion.
-  - If the bucket exists and is empty, remove it from the metadata storage.
-  - Return a `204 No Content` status code if the deletion is successful, or an error message in XML format if the bucket does not exist or is not empty (e.g., `404 Not Found` for a non-existent bucket, 409 Conflict for a non-empty bucket).
+Requirements:
 
-Don't forget to process the data and save the corresponding metadata in your CSV file.
+- The program must be able to print header by sub command `header`.
+- The output header information of a bmp file must contain at least information about:
+  - `file type`
+  - `file size in bytes`
+  - `header size`
+  - `DIB header size`
+  - `width in pixels`
+  - `height in pixels`
+  - `pixel size in bits`
+  - `image size in bytes`
+- We do not limit the number of headings, you can display more headings at your discretion.
+- If any error print an error message with non zero exit status.
 
-### Ensuring Unique and Valid Bucket Names:
+Example:
 
-#### Bucket Naming Conventions:
+![sample.bmp](./assets/sample.bmp)
 
-- Bucket names must be unique across the system.
-- Names should be between 3 and 63 characters long.
-- Only lowercase letters, numbers, hyphens (`-`), and dots (`.`) are allowed.
-- Must not be formatted as an IP address (e.g., 192.168.0.1).
-- Must not begin or end with a hyphen and must not contain two consecutive periods or dashes.
-
-#### Validation Implementation
-
-- Use regular expressions to enforce naming rules.
-- Check the uniqueness of a bucket name by reading the existing entries from the CSV metadata file.
-- If the bucket name does not meet the rules, return a `400 Bad Request` response with a relevant error message.
-
-
-
-### Example:
-
->##### Scenario 1: Bucket Creation
->- A client sends a `PUT` request to `/{BucketName}` with the name `my-bucket`.
->- The server checks for the validity and uniqueness of the bucket name, then creates an entry in the bucket metadata storage (e.g., `buckets.csv`).
->- The server responds with `200 OK` and the details of the new bucket or an appropriate error message if the creation fails.
-
->##### Scenario 2: Listing Buckets
->- A client sends a `GET` request to `/`.
->- The server reads the bucket metadata storage (e.g., `buckets.csv`) and returns an XML list of all bucket names and metadata.
->- The server responds with a `200 OK` status code.
-
->##### Scenario 3: Deleting a Bucket
->- A client sends a `DELETE` request to `/{BucketName}` for the bucket `my-bucket`.
->- The server checks if `my-bucket` exists and is empty.
->- If the conditions are met, the bucket is removed from the bucket metadata storage (e.g., `buckets.csv`).
-
-## Object Operations
-
-This part of the project focuses on implementing the functionality to handle objects (files) stored within buckets. You will create REST API endpoints to upload, retrieve, and delete objects. Each operation will interact with files stored on the disk and update metadata stored in CSV files to keep track of the objects and their attributes.
-
-### Object Key
-
-An object key is a unique identifier for an object (such as a file) stored within a specific bucket in a storage system.
-
-### API Endpoints for Object Operations
-
-You will implement three main API endpoints to handle object operations:
-
-#### 1. Upload a New Object:
-- **HTTP Method:** `PUT`
-- **Endpoint:** `/{BucketName}/{ObjectKey}`
-- **Request Body:** Binary data of the object (file content).
-- **Headers:**
-  - `Content-Type`: The object's data type.
-  - `Content-Length`: The length of the content in bytes.
-- **Behavior:**
-  - Verify if the specified bucket `{BucketName}` exists by reading from the bucket metadata.
-  - Validate the object key `{ObjectKey}`.
-  - Save the object content to a file in a directory named after the bucket (`data/{BucketName}/`).
-  - Store object metadata in a CSV file (`data/{BucketName}/objects.csv`).
-  - Respond with a 200 status code or an appropriate error message if the upload fails.
-  - **Note:** In this project, if an object with the same name already exists, it must be overwritten.
-
-Check out the [examples](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html#API_PutObject_Examples).
-
-#### 2. Retrieve an Object:
-- **HTTP Method:** `GET`
-- **Endpoint:** `/{BucketName}/{ObjectKey}`
-- **Behavior:**
-  - Verify if the bucket `{BucketName}` exists.
-  - Check if the object `{ObjectKey}` exists.
-  - Return the object data or an error.
-
-Make sure that your answer complies with S3 standards, refer to the Amazon S3 documentation for an [example](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html#API_GetObject_Examples).
-
-#### 3. Delete an Object:
-- **HTTP Method:** `DELETE`
-- **Endpoint:** `/{BucketName}/{ObjectKey}`
-- **Behavior:**
-  - Verify if the bucket and object exist.
-  - Delete the object and update metadata.
-  - Respond with a `204 No Content` status code or an appropriate error message.
-
-Meet the [standards](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html#API_DeleteObject_Examples).
-
-### Example Scenarios
-
->- **Scenario 1: Object Upload**
-   >  - A client sends a `PUT` request to `/photos/sunset.png` with the binary content of an image.
->  - The server checks if the `photos` bucket exists, validates the object key `sunset.png`, and saves the file to `data/photos/sunset.png`.
->  - The server updates `data/photos/objects.csv` with metadata for `sunset.png` and responds with `200 OK`.
-
->- **Scenario 2: Object Retrieval**
-   >  - A client sends a `GET` request to `/photos/sunset.png`.
->  - The server checks if the `photos` bucket exists and if `sunset.png` exists within the bucket.
->  - The server reads the file from `data/photos/sunset.png` and returns the binary content with the `Content-Type` header set to `image/png`.
-
->- **Scenario 3: Object Deletion**
-   >  - A client sends a `DELETE` request to `/photos/sunset.png`.
->  - The server checks if the `photos` bucket exists and if `sunset.png` exists within the bucket.
->  - The server deletes `data/photos/sunset.png` and removes the corresponding entry from `data/photos/objects.csv`.
->  - The server responds with `204 No Content`.
-
-## Implementation Details:
-
-### Directory Structure:
-- Use a base directory for storing all data (e.g., `data/`).
-- Inside this base directory, create subdirectories for each bucket (`data/{bucket-name}/`).
-- Store object files directly in the bucket's directory and maintain a metadata CSV file (`objects.csv`) to keep track of all objects.
-- **Object Upload Flow:**
-  1. **Bucket Verification**: When a `PUT` request is received, the server checks if the specified bucket exists.
-  2. **Object Key Validation**: The server validates the object key for acceptable characters and length.
-  3. **Save File**: The server writes the binary content to the file system (`data/{bucket-name}/{object-key}`).
-  4. **Update Metadata**: Update the `objects.csv` file for the bucket, appending a new entry or updating an existing one.
-  5. **Error Handling**: Handle errors such as insufficient storage, permission issues, and invalid object keys.
-- **Object Retrieval Flow:**
-  1. **Bucket and Object Verification**: The server checks if both the bucket and object exist.
-  2. **Read File**: If the object exists, the server reads the file content from disk.
-  3. **Set Response Headers**: The server sets the appropriate MIME type and other headers.
-  4. **Send Response**: The server sends the binary content of the object to the client.
-- **Object Deletion Flow:**
-  1. **Bucket and Object Verification**: The server checks if both the bucket and object exist.
-  2. **Delete File**: If the object exists, the server deletes the file from disk.
-  3. **Update Metadata**: Remove the corresponding entry from `objects.csv`.
-  4. **Error Handling**: Handle cases where the object does not exist or deletion fails due to file system errors.
-
-### Error Handling:
-- Gracefully handle file access errors (e.g., file not found, permission denied).
-- Respond with appropriate HTTP status codes for different errors (e.g., `404 Not Found` for a missing bucket, `409 Conflict` for duplicate bucket names).
-
-
-## Storing Metadata in a CSV File:
-
-### Bucket CSV File Structure:
-- Each line in the CSV file represents a bucket's metadata.
-- The columns could include:
-  - `Name`: The unique name of the bucket.
-  - `CreationTime`: The timestamp when the bucket was created.
-  - `LastModifiedTime`: The last time any modification was made to the bucket.
-  - `Status`: Indicates whether the bucket is active or marked for deletion.
-
-### Storing Object Metadata in a CSV File:
-
-- **CSV File Structure for Object Metadata:**
-  - Each bucket will have its own object metadata CSV file (e.g., `data/{bucket-name}/objects.csv`).
-  - The columns could include:
-    - `ObjectKey`: The unique key or identifier of the object within the bucket.
-    - `Size`: The size of the object in bytes.
-    - `ContentType`: The MIME type of the object (e.g., `image/png`, `application/pdf`).
-    - `LastModified`: The timestamp when the object was last uploaded or modified.
-
-## Usage
-Your program must be able to print usage information.
-
-Outcomes:
-
-- Program prints usage text.
-
-```
-$ ./triple-s --help  
-Simple Storage Service.
-
-**Usage:**
-    triple-s [-port <N>] [-dir <S>]  
-    triple-s --help
-
-**Options:**
-- --help     Show this screen.
-- --port N   Port number
-- --dir S    Path to the directory
+```sh
+$ xxd sample.bmp
+00000000: 424d 38e9 0700 0000 0000 3600 0000 2800  BM8.......6...(.
+00000010: 0000 e001 0000 6801 0000 0100 1800 0000  ......h.........
+00000020: 0000 02e9 0700 120b 0000 120b 0000 0000  ................
+00000030: 0000 0000 0000 2418 2426 1926 2718 2725  ......$.$&.&'.'%
+00000040: 1828 251a 2a29 1e2e 2a1e 2e2a 1f2f 291e  .(%.*)..*..*./).
+00000050: 2e2b 1f2e 2b1e 2c28 1b2b 2a1e 2e2a 1f30  .+..+.,(.+*..*.0
+00000060: 2f23 3636 2b3f 382d 3f38 2d3f 382e 3f3a  /#66+?8-?8-?8.?:
+00000070: 3041 392d 3f36 2a3c 3428 392e 2333 3327  0A9-?6*<4(9.#33'
+00000080: 3733 2636 2f23 332f 2534 3127 352f 2433  73&6/#3/%41'5/$3
+00000090: 2e21 312f 2133 2f21 3231 2233 3325 3731  .!1/!3/!21"33%71
+$
 ```
 
+```sh
+$ ./bitmap header sample.bmp
+BMP Header:
+- FileType BM
+- FileSizeInBytes 518456
+- HeaderSize 54
+DIB Header:
+- DibHeaderSize 40
+- WidthInPixels 480
+- HeightInPixels 360
+- PixelSizeInBits 24
+- ImageSizeInBytes 518402
+$
+```
 
+Error example:
+
+```sh
+$ ./bitmap header salem.txt
+Error: salem.txt is not bitmap file
+$ echo $?
+1
+```
+
+#### Mirror
+
+The `mirror` feature mirrors a bitmap image either horizontally or vertically.
+
+Requirements:
+
+1. Mirror the image horizontally or vertically. The flag `--mirror` should handle options bellow:
+
+- `horizontal`, `h`, `horizontally`, `hor`
+- `vertical`, `v`, `vertically`, `ver`.
+
+2. The `--mirror` option can be combined using multiple times.
+3. If any error print an error message with non zero exit status.
+
+> Mirroring a photo vertically is replacing pixels from `top` to `bottom`.
+
+Example:
+
+```sh
+$ ls -A
+sample.bmp
+$ ./bitmap apply --mirror=horizontal sample.bmp sample-mirrored-horizontal.bmp
+$ ls -A
+result.bmp sample.bmp
+$
+```
+
+Result:
+
+![sample-mirrored-horizontal.bmp](./assets/sample-mirrored-horizontal.bmp)
+
+#### Filter
+
+The program should be able to apply various filters to images using the `--filter` flag.
+
+Requirements:
+
+1. The program must accept filters for images specified by the `--filter` flag. The `--filter` flag should accept a value indicating the type of filter to apply. Multiple filters can be specified by using the `--filter` flag multiple times.
+
+- `--filter=blue`: Apply a filter that retains only the blue channel.
+- `--filter=red`: Apply a filter that retains only the red channel.
+- `--filter=green`: Apply a filter that retains only the green channel.
+- `--filter=grayscale`: Convert the image to grayscale.
+- `--filter=negative`: Apply a negative filter.
+- `--filter=pixelate`: Apply a pixelation effect. Option pixelates the image with a block size of 20 pixels by default.
+- `--filter=blur`: Apply a blur effect.
+
+> You can use any algorithm to realize `grayscale`, `negative`, `pixelate`,`blur` filters.
+
+2. Filters should be applied sequentially in the order they are provided.
+3. The `--filter` option can be combined using multiple times.
+4. If any error print an error message with non zero exit status.
+
+Examples:
+
+Filter blue:
+
+```sh
+$ ./bitmap apply --filter=blue sample.bmp sample-filtered-blue.bmp
+```
+
+Result:
+
+![sample-filtered-blue](sample-filtered-blue.bmp)
+
+Filter red:
+
+```sh
+$ ./bitmap apply --filter=red sample.bmp sample-filtered-red.bmp
+```
+
+Result:
+
+![sample-filtered-red](sample-filtered-red.bmp)
+
+Filter green:
+
+```sh
+$ ./bitmap apply --filter=green sample.bmp sample-filtered-green.bmp
+```
+
+Result:
+
+![sample-filtered-green](sample-filtered-green.bmp)
+
+Filter negative:
+
+```sh
+$ ./bitmap apply --filter=negative sample.bmp sample-filtered-negative.bmp
+```
+
+Result:
+
+![sample-filtered-negative](sample-filtered-negative.bmp)
+
+Filter pixelate:
+
+```sh
+$ ./bitmap apply --filter=pixelate sample.bmp sample-filtered-pixelate.bmp
+```
+
+Result:
+
+![sample-filtered-pixelate](sample-filtered-pixelate.bmp)
+
+Filter blur:
+
+```sh
+$ ./bitmap apply --filter=blur sample.bmp sample-filtered-blur.bmp
+```
+
+Result:
+
+![sample-filtered-blur](sample-filtered-blur.jpg)
+
+#### Rotate
+
+The `rotate` feature rotates a bitmap image by a specified angle.
+
+Requirements:
+
+1. The program must be able to rotate the image to the any direction using the parameter `--rotate`. The flag `--rotate` should handle options `right` (clockwise), `90`, `180`, `270`, `left`, `-90`, `-180`, `-270`.
+2. The `--rotate` option can be used multiple times to achieve the desired rotation. For example, using `--rotate=right` twice will rotate the image by 180 degrees.
+3. If any error print an error message with non zero exit status.
+
+Example:
+
+Rotate image to right twice:
+
+```sh
+$ ./bitmap apply --rotate=right --rotate=right sample.bmp sample-rotated-right-right.bmp
+```
+
+Result:
+
+![sample-rotated-right-right.jpg](./assets/sample-rotated-right-right.jpg)
+
+#### Crop
+
+The `crop` feature trims a bitmap image according to specified parameters.
+
+Requirements:
+
+1. The program crops a bitmap image using the `--crop` flag. The `--crop` option accepts either 2 or 4 values in pixels.
+2. The `--crop` option can be combined using multiple times.
+3. If any error print an error message with non zero exit status.
+
+How the `--crop` option works:
+
+- The `--crop` option accepts values that specify the offset by X, the offset by Y, the width, and the height. (`--crop=OffsetX-OffsetY-Width-Height`). Where width and height are optional. If the width and height are not provided, then how the values ​​for the width and height will be the remaining distance to the end of the photo.
+- The `--crop` option can be used multiple times to achieve the desired size.
+- If the total crop values ​​exceed the image size, the program should display an error.
+
+> When the file size is changed, the headers must also be updated.
+
+Examples:
+
+```sh
+$ ./bitmap header sample.bmp | grep "Pixels"
+- WidthInPixels 480
+- HeightInPixels 360
+```
+
+Example of cropping a photo:
+
+```sh
+$ ./bitmap apply --crop=20-20-100-100 sample.bmp sample-cropped-20-20-80-80.bmp
+```
+
+Result:
+
+![sample-cropped-20-20-100-100](./assets/sample-cropped-20-20-100-100.jpeg)
+
+Example of cropping a photo without width and height:
+
+```sh
+$ ./bitmap apply --crop=400-300 sample.bmp sample-cropped-400-300.bmp
+```
+
+Result:
+
+![sample-cropped-400-300](./assets/sample-cropped-400-300.jpg)
+
+Example of cropping a photo with multiple options:
+
+```sh
+$ ./bitmap apply --crop=20-20-100-100 --crop=25-25-50-50 sample.bmp sample-cropped-45-45-50-50.bmp
+```
+
+Result:
+
+![sample-cropped-45-45-50-50](./assets/sample-cropped-45-45-50-50.jpg)
+
+#### Combine apply options
+
+The program can combine all options of `apply` subcommand.
+
+Requirements:
+
+1. The program options must be processed sequentially. This means that if each option of subcommand `apply` were executed one after the other, the result would be the same.
+2. If any error print an error message with non zero exit status.
+
+```sh
+$ ./bitmap apply --mirror=horizontal --rotate=right --filter=negative --rotate=left --filter=green sample.bmp sample-mh-rr-fn-rl-fg.bmp
+```
+
+![sample-mh-rr-fn-rl-fg](./assets/sample-mh-rr-fn-rl-fg.bmp)
+
+#### Help
+
+The `help` feature provides information about how to use the program.
+
+Requirements:
+
+1. The program should display a help message when the `-h` or `--help` flag is used.
+2. The help feature has maximum priority, which means that when a program operates by combining options with a help flag, program must print help message.
+3. The help message should include information about all available flags and their usage.
+
+Example:
+
+```sh
+$ ./bitmap
+Usage:
+  bitmap <command> [arguments]
+
+The commands are:
+  header    prints bitmap file header information
+  apply     applies processing to the image and saves it to the file
+$ ./bitmap header --helps
+Usage:
+  bitmap header <source_file>
+
+Description:
+  Prints bitmap file header information
+$ ./bitmap apply --help
+Usage:
+  bitmap apply [options] <source_file> <output_file>
+
+The options are:
+  -h, --help      prints program usage information
+  ...
+```
