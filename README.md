@@ -125,7 +125,7 @@ $ ./bitmap apply --filter=blue sample.bmp sample-filtered-blue.bmp
 
 Result:
 
-![sample-filtered-blue](sample-filtered-blue.bmp)
+![sample-filtered-blue](./assets/sample-filtered-blue.bmp)
 
 Filter red:
 
@@ -135,7 +135,7 @@ $ ./bitmap apply --filter=red sample.bmp sample-filtered-red.bmp
 
 Result:
 
-![sample-filtered-red](sample-filtered-red.bmp)
+![sample-filtered-red](./assets/sample-filtered-red.bmp)
 
 Filter green:
 
@@ -145,7 +145,7 @@ $ ./bitmap apply --filter=green sample.bmp sample-filtered-green.bmp
 
 Result:
 
-![sample-filtered-green](sample-filtered-green.bmp)
+![sample-filtered-green](./assets/sample-filtered-green.bmp)
 
 Filter negative:
 
@@ -155,7 +155,7 @@ $ ./bitmap apply --filter=negative sample.bmp sample-filtered-negative.bmp
 
 Result:
 
-![sample-filtered-negative](sample-filtered-negative.bmp)
+![sample-filtered-negative](./assets/sample-filtered-negative.bmp)
 
 Filter pixelate:
 
@@ -165,7 +165,7 @@ $ ./bitmap apply --filter=pixelate sample.bmp sample-filtered-pixelate.bmp
 
 Result:
 
-![sample-filtered-pixelate](sample-filtered-pixelate.bmp)
+![sample-filtered-pixelate](./assets/sample-filtered-pixelate.bmp)
 
 Filter blur:
 
@@ -175,7 +175,7 @@ $ ./bitmap apply --filter=blur sample.bmp sample-filtered-blur.bmp
 
 Result:
 
-![sample-filtered-blur](sample-filtered-blur.jpg)
+![sample-filtered-blur](./assets/sample-filtered-blur.jpg)
 
 #### Rotate
 
